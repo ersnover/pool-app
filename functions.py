@@ -12,13 +12,15 @@ def Import_JSON():
 
 def Write_JSON():
     with open("status.json","w") as file:
-        json.dump(games_list,file)
+        json.dump(archive,file)
 
-def CG_Init():
+def Session_Init():
+    archive = Import_JSON()
+    games_list = archive
     current_games = []
     for i in range(0,12):
         current_games.append('Open')
-    return current_games
+    return archive, games_list, current_games
 
 def Print_Menu():
     print("\nChoose an option:\n1 -- Table Manager\n2 -- Create Report\n3 -- Export Report\nq -- Quit")
@@ -28,8 +30,7 @@ def Get_Menu_Choice():
     while valid_choice == False:
         menu_choice = input(">> ")
         if menu_choice == 'q' or menu_choice == 'Q':
-            print("Goodbye!")
-            quit()
+            Menu_Quit()
         try:
             menu_choice = int(menu_choice)
             if menu_choice == 1 or menu_choice == 2 or menu_choice == 3:
@@ -81,7 +82,7 @@ def Get_Table_Choice():
     return table_choice
 
 def Table_Manager():
-    print("-----Table Manager-----")
+    print("\n-----Table Manager-----")
     Print_Tables()
     print("\nEnter Table Selection\nm -- Return to Main Menu")
     choice = Get_Table_Choice()
@@ -139,10 +140,10 @@ def Index_to_Table(index):
 def New_Game(table_index):
     table_number = Index_to_Table(table_index)
     print(f"\nOpening New Game on Table {table_number}\n" + "-"*28)
-    index = len(games_list)
-    username = input("Enter user's first initial and last name: ")
-    new_game = Game(index, username, table_number)
-    print(f"\nGame ID: {index}\nUser: {username}\nTable: {table_number}\n\nPress s to Start Game\nPress x to cancel and return to Table Manager")  
+    game_id = len(games_list)
+    username = input("Enter username: ")
+    new_game = Game(game_id, username, table_number)
+    print(f"\nGame ID: {game_id}\nUser: {username}\nTable: {table_number}\n\nPress s to Start Game\nPress x to cancel and return to Table Manager")  
     valid_input = False
     while valid_input == False:
         confirm = input(">> ")
@@ -159,6 +160,7 @@ def New_Game(table_index):
         else:
             print("Invalid input. Enter s or x.")
 
+#Converts total time (in seconds) to HH:MM string for printing
 def Format_Time(time):
     total_minutes = int(time / 60)
     minutes = str(total_minutes % 60)
@@ -169,6 +171,7 @@ def Format_Time(time):
         hours = "0" + hours
     format_time = f"{hours}:{minutes}"
     return format_time
+
 
 def Close_Game(table_index):
     table_number = Index_to_Table(table_index)
@@ -181,7 +184,7 @@ def Close_Game(table_index):
             end_time = time.time()
             game.Close_Game(end_time)
             dicto = game.Game_to_Dict()
-            games_list[game.index] = dicto
+            games_list[game.game_id] = dicto
             current_games[table_index] = 'Open'
             valid_input = True
             print(f"Return to Table Manager? (y/n)")
@@ -202,8 +205,75 @@ def Close_Game(table_index):
             Table_Manager()
         else:
             print("Invalid input. Enter y or n.")
+
+def Menu_Quit():
+    games_open = Open_Game_Check()
+    if games_open == True:
+        print("\nCannot quit while games are still open.\nm -- Main Menu\nf -- FORCE CLOSE all open games (will print game receipts).")
+        valid_input = False
+        while valid_input == False:
+            confirm = input(">> ")
+            if confirm == 'm' or confirm == 'M':
+                valid_input = True
+                Main_Menu()
+            elif confirm == 'f' or confirm == 'F':
+                valid_input = True
+                FC_Interface()
+            else:
+                print("Invalid input. Enter m or f.")
+    print("\nGoodbye!")
+    archive = games_list
+    Write_JSON()
+    quit()
+
+
+def Open_Game_Check():
+    games_open = False
+    for game in current_games:
+        if game != 'Open':
+            games_open = True
+            break
+    return games_open
     
-   
+def FC_Interface():
+    open_games = []
+    for i in range(12):
+        if current_games[i] != 'Open':
+            open_games.append(current_games[i])
+    num = str(len(open_games))
+    print(f'Force Close {num} open games? (y/n)')
+    valid_input = False
+    while valid_input == False:
+        confirm = input(">> ")
+        if confirm == 'y' or confirm == 'Y':
+            valid_input = True
+            Force_Close(open_games)
+        elif confirm == 'n' or confirm == 'N':
+            valid_input = True
+            Menu_Quit()
+        else:
+            print("Invalid input. Enter y or n.")
+
+def Force_Close(games):
+    counter = 1
+    for game in games:
+        table_number = game.table_number
+        table_index = Table_to_Index(table_number)
+        end_time = time.time()
+        game.Close_Game(end_time)
+        dicto = game.Game_to_Dict()
+        games_list[game.game_id] = dicto
+        current_games[table_index] = 'Open'
+        if counter < len(games):
+            input("\nPress any button to close next table")
+            counter += 1
+        else:
+            print("\nAll games Closed.")
+
+
+
+
+
     
 
 
@@ -211,7 +281,21 @@ def Close_Game(table_index):
 
 
 
-archive = Import_JSON()
-games_list = archive
-current_games = CG_Init()
+archive, games_list, current_games = Session_Init()
+
+# game1 = Game(0,"ESNOVER","04")
+# game1.Open_Game()
+# games_list.append(game1)
+# current_games[3] = game1
+
+# game2 = Game(1,"CCUSTER","09")
+# game2.Open_Game()
+# games_list.append(game2)
+# current_games[8] = game2
+
+# game3 = Game(2,"GSNOVER","01")
+# game3.Open_Game()
+# games_list.append(game3)
+# current_games[0] = game3
+
 Main_Menu()

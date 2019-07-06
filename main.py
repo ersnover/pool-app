@@ -1,11 +1,25 @@
 import json
 from functions import *
+from reportfx import *
 from poolclasses import Game
 import time
 
-price_per_hour = 30.00
-archive = Import_JSON()
-games_list = archive
-current_games = CG_Init()
+archive, games_list, current_games = Session_Init()
+
+# game1 = Game(0,"ESNOVER","04")
+# game1.Open_Game()
+# games_list.append(game1)
+# current_games[3] = game1
+
+# game2 = Game(1,"CCUSTER","09")
+# game2.Open_Game()
+# games_list.append(game2)
+# current_games[8] = game2
+
+# game3 = Game(2,"GSNOVER","01")
+# game3.Open_Game()
+# games_list.append(game3)
+# current_games[0] = game3
+
 Main_Menu()
 

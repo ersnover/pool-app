@@ -17,8 +17,8 @@ price_per_hour = 30.00
 price_per_second = price_per_hour / 3600
 
 class Game:
-    def __init__(self, index, username, table_number):
-        self.index = index
+    def __init__(self, game_id, username, table_number):
+        self.game_id = game_id
         self.username = username
         self.table_number = table_number
         self.start_time = ""
@@ -32,11 +32,11 @@ class Game:
     def Open_Game(self):
         self.start_time = round(time.time(),2)
         self.format_start_time = time.strftime("%I:%M %p")
-        print(f"\nTable {self.table_number} opened.\nGame ID: {self.index}\nStart Time: {self.format_start_time}")
+        print(f"\nTable {self.table_number} opened.\nGame ID: {self.game_id}\nStart Time: {self.format_start_time}")
 
     def Game_to_Dict(self):
         dicto = {
-            "index": self.index,
+            "game_id": self.game_id,
             "username": self.username,
             "table_number": self.table_number,
             "start_time": self.start_time,
@@ -52,6 +52,6 @@ class Game:
         self.total_time = self.end_time - self.start_time
         self.format_total_time = Format_Time(self.total_time)
         self.cost = round(self.total_time * price_per_second,2)
-        print(f"Closing Table {self.table_number}\n" + ("-" * 14), f"\nGame ID:{self.index}\nStart Time: {self.format_start_time}\nEnd Time: {self.format_end_time}\nTotal Time: {self.format_total_time}\nAmount Due: ${self.cost}")
+        print(f"\nClosing Table {self.table_number}\n" + ("-" * 14), f"\nGame ID: {self.game_id}\nUser: {self.username}\nStart Time: {self.format_start_time}\nEnd Time: {self.format_end_time}\nTotal Time: {self.format_total_time}\nAmount Due: ${self.cost}")
 
 
