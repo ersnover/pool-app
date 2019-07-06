@@ -53,13 +53,14 @@ def New_Game(table_number):
     index = len(games_list)
     username = input("Enter user's first initial and last name: ")
     new_game = Game(index, username, table_number)
-    print(f"\nGame ID: {index}\nUser: {username}\nTable: {table_number}\nPress s to Start Game\nPress x to cancel and return to Table Manager")
+    print(f"\nGame ID: {index}\nUser: {username}\nTable: {table_number}\n\nPress s to Start Game\nPress x to cancel and return to Table Manager")
     confirm = input(">> ")
     valid_input = False
     while valid_input == False:
         if confirm == 's' or confirm == 'S':
             new_game.Open_Game()
             games_list.append(new_game)
+            current_games.append(new_game)
             valid_input = True
         elif confirm == 'x' or confirm == 'X':
             valid_input = True
@@ -68,6 +69,40 @@ def New_Game(table_number):
         else:
             print("Invalid input. Enter s or x.")
 
+def Format_Time(time):
+    total_minutes = int(time / 60)
+    minutes = total_minutes % 60
+    hours = int(total_minutes / 60)
+    format_time = f"{str(hours)}:{str(minutes)}"
+    return format_time
+
+def Close_Game(table_number):
+    for item in current_games:
+        if item.table_number == table_number:
+            game = item
+            break
+    print(f"Close game on Table {table_number}? (y/n)")
+    valid_input = False
+    while valid_input == False:
+        confirm = input(">> ")
+        if confirm == 'y' or confirm == 'Y':
+            end_time = time.time()
+            game.Close_Game(end_time)
+            dicto = game.Game_to_Dict
+            games_list[game.index] = dicto
+            for i in range(0,len(current_games)):
+                if current_games[i].table_number == table_number:
+                    del current_games[i]
+            valid_input = True
+        elif confirm == 'n' or confirm == 'N':
+            valid_input = True
+            print("Returning to Table Manager.")
+            Table_Manager()
+        else:
+            print("Invalid input. Enter y or n.")
+    
+   
+    
 
 
 
@@ -76,5 +111,12 @@ def New_Game(table_number):
 
 archive = Import_JSON()
 games_list = archive
+current_games = []
 # Main_Menu()
 New_Game("05")
+print("games list\n", games_list[0])
+print("current games\n", current_games[0])
+time.sleep(15)
+Close_Game("05")
+print("games list\n", games_list[0]["start_time"])
+print("games list\n", games_list[0]["cost"])
