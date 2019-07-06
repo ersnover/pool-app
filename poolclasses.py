@@ -52,6 +52,6 @@ class Game:
         self.total_time = self.end_time - self.start_time
         self.format_total_time = Format_Time(self.total_time)
         self.cost = round(self.total_time * price_per_second,2)
-        print(f"Closing Table {self.table_number}" + "-" * 14, f"\nGame ID:{self.index}\nStart Time: {self.format_start_time}\nEnd Time: {self.format_end_time}\nTotal Time: {self.format_total_time}\nAmount Due: ${self.cost}")
+        print(f"Closing Table {self.table_number}\n" + ("-" * 14), f"\nGame ID:{self.index}\nStart Time: {self.format_start_time}\nEnd Time: {self.format_end_time}\nTotal Time: {self.format_total_time}\nAmount Due: ${self.cost}")
 
 
